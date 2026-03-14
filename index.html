@@ -1,97 +1,30 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<title>星のチケット発行所</title>
-<style>
-  body { font-family: sans-serif; padding: 20px; background-color: #f7f3f9; color: #333; }
-  h1 { color: #5c3d7c; }
-  input, button { margin: 5px 0; padding: 5px; font-size: 1rem; }
-  button { cursor: pointer; background-color: #5c3d7c; color: white; border: none; border-radius: 5px; }
-  #result { margin-top: 15px; white-space: pre-line; font-weight: bold; }
-</style>
+  <meta charset="UTF-8">
+  <title>星座テスト</title>
 </head>
-
 <body>
+  <h1>あなたの星座情報</h1>
 
-<h1>星のチケット発行所</h1>
+  <!-- 星座情報を表示する場所 -->
+  <div id="result">読み込み中...</div>
 
-<p>誕生日</p>
-<input type="date" id="birthday">
-
-<p>出生時間</p>
-<input type="time" id="birthtime">
-
-<p>出生地</p>
-<input type="text" id="birthplace" placeholder="Tokyo">
-
-<br><br>
-
-<button onclick="showData()">チケット表示</button>
-
-<p id="result"></p>
-
-<script>
-// 太陽星座の簡易計算
-function getSunSign(month, day) {
-  const zodiac = [
-    { sign: "Capricorn", end: 19 },
-    { sign: "Aquarius", end: 18 },
-    { sign: "Pisces", end: 20 },
-    { sign: "Aries", end: 19 },
-    { sign: "Taurus", end: 20 },
-    { sign: "Gemini", end: 20 },
-    { sign: "Cancer", end: 22 },
-    { sign: "Leo", end: 22 },
-    { sign: "Virgo", end: 22 },
-    { sign: "Libra", end: 22 },
-    { sign: "Scorpio", end: 21 },
-    { sign: "Sagittarius", end: 21 }
-  ];
-  return day > zodiac[month-1].end
-    ? zodiac[month % 12].sign
-    : zodiac[month-1].sign;
-}
-
-// 出生地 → 緯度経度（簡易版）
-const places = {
-  "Tokyo": { lat: 35.6895, lon: 139.6917 },
-  "Osaka": { lat: 34.6937, lon: 135.5023 },
-  "Kyoto": { lat: 35.0116, lon: 135.7681 }
-};
-
-function showData() {
-  // 入力値をまとめる
-  const birthData = {
-    date: document.getElementById("birthday").value,
-    time: document.getElementById("birthtime").value,
-    place: document.getElementById("birthplace").value
-  };
-
-  // 太陽星座計算
-  let sunSign = "";
-  if (birthData.date) {
-    const parts = birthData.date.split("-");
-    const month = parseInt(parts[1],10);
-    const day = parseInt(parts[2],10);
-    sunSign = getSunSign(month, day);
+  <!-- APIを呼んで表示するスクリプト -->
+  <script>
+  async function getHoroscope() {
+    try {
+      const response = await fetch("/api/horoscope");
+      const data = await response.json();
+      document.getElementById("result").innerText =
+        `太陽: ${data.sun}\n月: ${data.moon}\nアセンダント: ${data.asc}`;
+    } catch (error) {
+      document.getElementById("result").innerText = "取得できませんでした";
+      console.error(error);
+    }
   }
 
-  // 緯度経度取得（将来のAPI接続用）
-  const coords = places[birthData.place] || { lat: 0, lon: 0 };
-
-  // 表示
-  document.getElementById("result").innerText =
-    "誕生日: " + birthData.date +
-    "\n出生時間: " + birthData.time +
-    "\n出生地: " + birthData.place +
-    "\n太陽星座: " + sunSign +
-    "\n緯度: " + coords.lat + ", 経度: " + coords.lon;
-}
-</script>
-
+  getHoroscope();
+  </script>
 </body>
 </html>
