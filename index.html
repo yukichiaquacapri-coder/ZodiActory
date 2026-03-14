@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
 <meta charset="UTF-8">
 <title>星のチケット発行所</title>
 <style>
@@ -32,7 +35,7 @@
 <p id="result"></p>
 
 <script>
-// 太陽星座の簡易計算（ざっくり）
+// 太陽星座の簡易計算
 function getSunSign(month, day) {
   const zodiac = [
     { sign: "Capricorn", end: 19 },
@@ -53,7 +56,7 @@ function getSunSign(month, day) {
     : zodiac[month-1].sign;
 }
 
-// 出生地簡易変換（緯度・経度）
+// 出生地 → 緯度経度（簡易版）
 const places = {
   "Tokyo": { lat: 35.6895, lon: 139.6917 },
   "Osaka": { lat: 34.6937, lon: 135.5023 },
@@ -77,7 +80,7 @@ function showData() {
     sunSign = getSunSign(month, day);
   }
 
-  // 緯度経度取得（未使用だがAPI接続の準備）
+  // 緯度経度取得（将来のAPI接続用）
   const coords = places[birthData.place] || { lat: 0, lon: 0 };
 
   // 表示
