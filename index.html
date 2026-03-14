@@ -1,32 +1,50 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>星座テスト</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Natal Chart</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a2e; color: white; text-align: center; padding: 20px; }
+        .container { background: #16213e; padding: 20px; border-radius: 15px; display: inline-block; }
+        input { padding: 8px; margin: 5px; border-radius: 5px; border: none; }
+        button { padding: 10px 20px; background: #e94560; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        #result { margin-top: 20px; font-size: 1.2em; line-height: 1.6; }
+    </style>
 </head>
 <body>
-  <h1>あなたの星座情報</h1>
+    <h1>ホロスコープ計算機</h1>
+    <div class="container">
+        <p>生年月日と時間を入力してください</p>
+        <input type="date" id="birthDate" value="1993-01-21"><br>
+        <input type="time" id="birthTime" value="12:00"><br>
+        <button onclick="calculate()">計算する</button>
 
-  <!-- 星座情報を表示する場所 -->
-  <div id="result">読み込み中...</div>
+        <div id="result">ここに結果が表示されます</div>
+    </div>
 
-  <!-- APIを呼んで表示するスクリプト -->
-  <script>
-  async function getHoroscope() {
-    try {
-      //const response = await fetch("/api/horoscope");
-      // 絶対パスで指定すると、同じドメイン内の /api/horoscope を探しに行きます
-      const response = await fetch("/api/horoscope");
-      const data = await response.json();
-      document.getElementById("result").innerText =
-        `太陽: ${data.sun}\n月: ${data.moon}\nアセンダント: ${data.asc}`;
-    } catch (error) {
-      document.getElementById("result").innerText = "取得できませんでした";
-      console.error(error);
-    }
-  }
+    <script>
+        async function calculate() {
+            const date = document.getElementById('birthDate').value;
+            const time = document.getElementById('birthTime').value;
+            const resultDiv = document.getElementById('result');
 
-  getHoroscope();
-  </script>
+            resultDiv.innerText = "計算中...";
+
+            try {
+                // URLに誕生日データをくっつけてAPIに送る
+                const response = await fetch(`/api/horoscope?date=${date}&time=${time}`);
+                const data = await response.json();
+
+                resultDiv.innerHTML = `
+                    太陽: ${data.sun}<br>
+                    月: ${data.moon}<br>
+                    アセンダント: ${data.asc}
+                `;
+            } catch (error) {
+                resultDiv.innerText = "エラーが発生しました";
+            }
+        }
+    </script>
 </body>
 </html>
