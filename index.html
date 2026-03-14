@@ -1,50 +1,33 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Natal Chart</title>
-    <style>
-        body { font-family: sans-serif; background: #1a1a2e; color: white; text-align: center; padding: 20px; }
-        .container { background: #16213e; padding: 20px; border-radius: 15px; display: inline-block; }
-        input { padding: 8px; margin: 5px; border-radius: 5px; border: none; }
-        button { padding: 10px 20px; background: #e94560; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        #result { margin-top: 20px; font-size: 1.2em; line-height: 1.6; }
-    </style>
-</head>
-<body>
-    <h1>ホロスコープ計算機</h1>
-    <div class="container">
-        <p>生年月日と時間を入力してください</p>
-        <input type="date" id="birthDate" value="1993-01-21"><br>
-        <input type="time" id="birthTime" value="12:00"><br>
-        <button onclick="calculate()">計算する</button>
+import swisheph from 'swisseph';
 
-        <div id="result">ここに結果が表示されます</div>
-    </div>
+export default function handler(req, res) {
+    // 画面から送られてきた日付（YYYY-MM-DD）と時間（HH:mm）を取得
+    const { date, time } = req.query;
+    if (!date || !time) {
+        return res.status(400).json({ error: "Date and time are required" });
+    }
 
-    <script>
-        async function calculate() {
-            const date = document.getElementById('birthDate').value;
-            const time = document.getElementById('birthTime').value;
-            const resultDiv = document.getElementById('result');
+    const [year, month, day] = date.split('-').map(Number);
+    const [hour, minute] = time.split(':').map(Number);
 
-            resultDiv.innerText = "計算中...";
+    // ユリウス日を計算（スイスエフェメリス用）
+    const julianDay = swisheph.swe_julday(year, month, day, hour + minute / 60, swisheph.SE_GREG_CAL);
 
-            try {
-                // URLに誕生日データをくっつけてAPIに送る
-                const response = await fetch(`/api/horoscope?date=${date}&time=${time}`);
-                const data = await response.json();
+    // 太陽(SE_SUN)の位置を計算
+    swisheph.swe_calc_ut(julianDay, swisheph.SE_SUN, swisheph.SEFLG_SPEED, (res_sun) => {
+        const sunLong = res_sun.longitude;
+        
+        // 12星座のリスト
+        const signs = ["牡羊座", "牡牛座", "双子座", "蟹座", "獅子座", "乙女座", "天秤座", "蠍座", "射手座", "山羊座", "水瓶座", "魚座"];
+        
+        // 30度ずつで割って、どの星座か判定
+        const sunSign = signs[Math.floor(sunLong / 30)];
 
-                resultDiv.innerHTML = `
-                    太陽: ${data.sun}<br>
-                    月: ${data.moon}<br>
-                    アセンダント: ${data.asc}
-                `;
-            } catch (error) {
-                resultDiv.innerText = "エラーが発生しました";
-            }
-        }
-    </script>
-</body>
-</html>
+        // 結果を返す
+        res.status(200).json({
+            sun: `${sunSign} (${sunLong.toFixed(2)}°)`,
+            moon: "計算中...", // 次に月やアセンダントも追加しましょう！
+            asc: "計算中..."
+        });
+    });
+}
