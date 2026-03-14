@@ -1,0 +1,7 @@
+{
+  "name": "yukichi-aqua-capri",
+  "version": "1.0.0",
+  "dependencies": {
+    "swisseph": "^0.10.0"
+  }
+}
