@@ -32,7 +32,7 @@
 <p id="result"></p>
 
 <script>
-// 太陽星座の簡易計算（境界はざっくり）
+// 太陽星座の簡易計算（ざっくり）
 function getSunSign(month, day) {
   const zodiac = [
     { sign: "Capricorn", end: 19 },
@@ -53,24 +53,40 @@ function getSunSign(month, day) {
     : zodiac[month-1].sign;
 }
 
-function showData() {
-  let birthdate = document.getElementById("birthday").value;
-  let birthtime = document.getElementById("birthtime").value;
-  let birthplace = document.getElementById("birthplace").value;
+// 出生地簡易変換（緯度・経度）
+const places = {
+  "Tokyo": { lat: 35.6895, lon: 139.6917 },
+  "Osaka": { lat: 34.6937, lon: 135.5023 },
+  "Kyoto": { lat: 35.0116, lon: 135.7681 }
+};
 
+function showData() {
+  // 入力値をまとめる
+  const birthData = {
+    date: document.getElementById("birthday").value,
+    time: document.getElementById("birthtime").value,
+    place: document.getElementById("birthplace").value
+  };
+
+  // 太陽星座計算
   let sunSign = "";
-  if (birthdate) {
-    const parts = birthdate.split("-");
+  if (birthData.date) {
+    const parts = birthData.date.split("-");
     const month = parseInt(parts[1],10);
     const day = parseInt(parts[2],10);
     sunSign = getSunSign(month, day);
   }
 
+  // 緯度経度取得（未使用だがAPI接続の準備）
+  const coords = places[birthData.place] || { lat: 0, lon: 0 };
+
+  // 表示
   document.getElementById("result").innerText =
-    "誕生日: " + birthdate +
-    "\n出生時間: " + birthtime +
-    "\n出生地: " + birthplace +
-    (sunSign ? "\n太陽星座: " + sunSign : "");
+    "誕生日: " + birthData.date +
+    "\n出生時間: " + birthData.time +
+    "\n出生地: " + birthData.place +
+    "\n太陽星座: " + sunSign +
+    "\n緯度: " + coords.lat + ", 経度: " + coords.lon;
 }
 </script>
 
