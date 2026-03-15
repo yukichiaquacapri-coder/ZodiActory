@@ -1,6 +1,7 @@
 {
-  "name": "cosmic-calculator",
+  "name": "yukichi-aqua-capri",
   "version": "1.0.0",
+  "main": "api/horoscope.js",
   "dependencies": {
     "swisseph": "0.10.0"
   },
