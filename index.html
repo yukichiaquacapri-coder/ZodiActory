@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>宇宙計算機 - 全世界公開版</title>
+    <title>Yukichi's Portal & Cosmic Calculator</title>
     <style>
         body {
             background-color: #0d1b2a;
@@ -14,6 +14,8 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            flex-direction: column;
+            padding: 20px;
         }
         .container {
             background-color: #1b263b;
@@ -21,30 +23,61 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             text-align: center;
+            margin-bottom: 20px;
         }
-        h1 { color: #4cc9f0; margin-bottom: 1.5rem; }
+        h1 { color: #4cc9f0; margin-bottom: 1rem; font-size: 1.5rem; }
+        h2 { color: #a2d2ff; font-size: 1.2rem; margin-top: 0; }
+        
+        /* リンク集のスタイル */
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #415a77;
+        }
+        .btn-link {
+            display: block;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+            background-color: #415a77;
+            color: white;
+        }
+        .btn-link:hover { background-color: #778da9; }
+        .btn-steam { background-color: #171a21; border: 1px solid #66c0f4; }
+        .btn-steam:hover { background-color: #2a475e; }
+
+        /* 計算機のスタイル */
+        label { display: block; text-align: left; margin-top: 10px; font-size: 0.9rem; color: #a2d2ff; }
         input {
             width: 100%;
             padding: 12px;
-            margin: 8px 0;
+            margin: 5px 0 15px 0;
             border-radius: 8px;
             border: none;
             background-color: #0d1b2a;
             color: white;
             box-sizing: border-box;
+            font-size: 1rem;
         }
+        .coord-group { display: flex; gap: 10px; }
         button {
             width: 100%;
             padding: 15px;
-            margin-top: 15px;
+            margin-top: 10px;
             border-radius: 8px;
             border: none;
             background-color: #4cc9f0;
             color: #0d1b2a;
             font-weight: bold;
             cursor: pointer;
+            font-size: 1rem;
             transition: 0.3s;
         }
         button:hover { background-color: #4361ee; color: white; }
@@ -53,16 +86,24 @@
             padding: 15px;
             background-color: #0d1b2a;
             border-radius: 8px;
-            min-height: 50px;
-            line-height: 1.6;
+            min-height: 60px;
+            text-align: left;
+            line-height: 1.8;
+            border-left: 4px solid #4cc9f0;
         }
-        .coord-group { display: flex; gap: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>宇宙計算機</h1>
+    <h1>Yukichi's Works</h1>
+    
+    <div class="links">
+        <a href="YOUR_STEAM_URL_HERE" target="_blank" class="btn-link btn-steam">🎮 Steam: 7 Days Later...</a>
+        <a href="https://www.tiktok.com/" target="_blank" class="btn-link">📱 TikTok / Design</a>
+    </div>
+
+    <h2>宇宙計算機</h2>
     
     <label>生年月日</label>
     <input type="date" id="date" value="1993-01-22">
@@ -71,11 +112,11 @@
     <input type="time" id="time" value="09:06">
     
     <div class="coord-group">
-        <div>
+        <div style="flex: 1;">
             <label>緯度</label>
             <input type="number" id="lat" value="43.06" step="0.01">
         </div>
-        <div>
+        <div style="flex: 1;">
             <label>経度</label>
             <input type="number" id="lng" value="141.35" step="0.01">
         </div>
@@ -83,7 +124,7 @@
 
     <button onclick="calculate()">ネイタルチャートを計算</button>
 
-    <div id="result">ここに結果が表示されます</div>
+    <div id="result">生年月日を入力して計算してください</div>
 </div>
 
 <script>
@@ -95,41 +136,38 @@ async function calculate() {
     const lng = document.getElementById('lng').value;
 
     if (!date || !time) {
-        resDiv.innerHTML = "日付と時刻を入力してください。";
+        resDiv.innerHTML = "❌ 日付と時刻を入力してください。";
         return;
     }
 
     try {
         resDiv.innerHTML = "🌟 宇宙の配置を計算中...";
         
-       // index.html の calculate 関数内の fetch 部分を書き換え
-const timezoneOffset = new Date().getTimezoneOffset(); // ブラウザから時差（分）を取得
-
-const resp = await fetch(`https://yukichiaquacapri-production.up.railway.app/api/horoscope?...`);
+        // ブラウザの時差を取得（日本なら -540）
+        const offset = new Date().getTimezoneOffset();
+        
+        // RailwayのURLを指定（CORS設定済みであること）
+        const url = `https://yukichiaquacapri-production.up.railway.app/api/horoscope?date=${date}&time=${time}&lat=${lat}&lng=${lng}&offset=${offset}`;
+        
+        const resp = await fetch(url);
         
         if (!resp.ok) {
-            throw new Error('サーバーエラーが発生しました');
+            const errJson = await resp.json();
+            throw new Error(errJson.error || 'サーバーエラー');
         }
         
         const data = await resp.json();
 
-        if (data.error) {
-            resDiv.innerHTML = "計算エラー: " + data.error;
-            return;
-        }
-
         // 結果を画面に表示
         resDiv.innerHTML = `
-            <div style="text-align: left; padding: 5px;">
-                ☀️ 太陽: <strong>${data.sunPos}</strong><br>
-                🌙 月: <strong>${data.moonPos}</strong><br>
-                ♂️ 火星: <strong>${data.marsPos}</strong><br>
-                ⬆️ ASC: <strong>${data.ascPos}</strong>
-            </div>
+            ☀️ 太陽: <strong>${data.sunPos}</strong><br>
+            🌙 月: <strong>${data.moonPos}</strong><br>
+            ♂️ 火星: <strong>${data.marsPos}</strong><br>
+            ⬆️ ASC: <strong>${data.ascPos}</strong>
         `;
     } catch (error) {
         console.error('Error:', error);
-        resDiv.innerHTML = "通信に失敗しました。サーバーのビルド完了を待ってから再試行してください。";
+        resDiv.innerHTML = "⚠️ 通信に失敗しました。Railwayのサーバーが起動中か確認してください。";
     }
 }
 </script>
