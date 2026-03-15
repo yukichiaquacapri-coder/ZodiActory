@@ -25,37 +25,43 @@
         <button onclick="calculate()">ネイタルチャートを計算</button>
         <div id="result">ここに結果が表示されます</div>
     </div>
+<script>
 async function calculate() {
     const resDiv = document.getElementById('result');
-    // 入力値の取得
     const date = document.getElementById('date').value;
     const time = document.getElementById('time').value;
     const lat = document.getElementById('lat').value;
     const lng = document.getElementById('lng').value;
 
+    if (!date || !time) {
+        resDiv.innerHTML = "日付と時刻を入力してください。";
+        return;
+    }
+
     try {
-        resDiv.innerHTML = "計算中...";
+        resDiv.innerHTML = "🌟 宇宙の配置を計算中...";
+        
         // RailwayのURLに向けてデータを送る
         const resp = await fetch(`/api/horoscope?date=${date}&time=${time}&lat=${lat}&lng=${lng}`);
+        
+        if (!resp.ok) throw new Error('Network error');
+        
         const data = await resp.json();
 
-        if (data.error) {
-            resDiv.innerHTML = "エラーが発生しました。";
-            return;
-        }
-
-        // 結果の表示
+        // 結果を表示する
         resDiv.innerHTML = `
-            ☀️ 太陽: <strong>${data.sunPos}</strong><br>
-            🌙 月: <strong>${data.moonPos}</strong><br>
-            ♂️ 火星: <strong>${data.marsPos}</strong><br>
-            ⬆️ ASC: <strong>${data.ascPos}</strong>
+            <div style="text-align: left; padding: 10px;">
+                ☀️ 太陽: <strong>${data.sunPos}</strong><br>
+                🌙 月: <strong>${data.moonPos}</strong><br>
+                ♂️ 火星: <strong>${data.marsPos}</strong><br>
+                ⬆️ ASC: <strong>${data.ascPos}</strong>
+            </div>
         `;
     } catch (error) {
-        // ここが抜けていると SyntaxError になります
-        console.error(error);
-        resDiv.innerHTML = "通信エラーが発生しました。";
+        console.error('Error:', error);
+        resDiv.innerHTML = "計算に失敗しました。サーバーが準備中かもしれません。";
     }
 }
+</script>
 </body>
 </html>
