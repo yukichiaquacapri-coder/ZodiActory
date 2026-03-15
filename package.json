@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "express": "^4.18.2",
-    "swisseph": "latest"
+    "swisseph": "latest",
+    "cors": "latest" 
   },
   "engines": {
     "node": "20.x"
