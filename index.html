@@ -5,121 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cosmic Calculator</title>
     <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent: #38bdf8;
-            --text: #f8fafc;
-        }
-        body { 
-            font-family: 'Helvetica Neue', Arial, sans-serif; 
-            background: var(--bg-color); 
-            color: var(--text); 
-            text-align: center; 
-            padding: 40px 20px;
-            margin: 0;
-        }
-        .container { 
-            background: var(--card-bg); 
-            padding: 30px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            display: inline-block; 
-            max-width: 400px;
-            width: 100%;
-        }
-        h1 { color: var(--accent); margin-bottom: 25px; }
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f8fafc; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); text-align: center; padding: 40px 20px; }
+        .container { background: var(--card); padding: 30px; border-radius: 20px; display: inline-block; max-width: 400px; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        h1 { color: var(--accent); }
         .input-group { margin-bottom: 15px; text-align: left; }
-        label { display: block; font-size: 0.8em; margin-bottom: 5px; color: #94a3b8; }
-        input { 
-            width: 100%; 
-            padding: 10px; 
-            box-sizing: border-box; 
-            border-radius: 8px; 
-            border: 1px solid #334155; 
-            background: #0f172a; 
-            color: white; 
-            font-size: 1em;
-        }
-        .geo-inputs { display: flex; gap: 10px; }
-        button { 
-            width: 100%;
-            padding: 12px; 
-            margin-top: 10px;
-            background: var(--accent); 
-            color: #0f172a; 
-            border: none; 
-            border-radius: 8px; 
-            font-weight: bold;
-            cursor: pointer; 
-            transition: transform 0.2s;
-        }
-        button:hover { transform: scale(1.02); background: #7dd3fc; }
-        #result { 
-            margin-top: 30px; 
-            padding: 20px;
-            background: rgba(56, 189, 248, 0.1);
-            border-radius: 12px;
-            font-size: 1.1em; 
-            line-height: 1.8; 
-            text-align: left;
-        }
-        .sign-data { display: flex; justify-content: space-between; border-bottom: 1px solid #334155; padding: 5px 0; }
+        label { display: block; font-size: 0.8em; color: #94a3b8; margin-bottom: 5px; }
+        input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+        .geo { display: flex; gap: 10px; }
+        button { width: 100%; padding: 12px; margin-top: 10px; background: var(--accent); color: #0f172a; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        #result { margin-top: 30px; padding: 20px; background: rgba(56,189,248,0.1); border-radius: 12px; text-align: left; line-height: 2; }
     </style>
 </head>
 <body>
-    <h1>Cosmic Calculator</h1>
+    <h1>宇宙計算機</h1>
     <div class="container">
-        <div class="input-group">
-            <label>生年月日</label>
-            <input type="date" id="birthDate" value="1993-01-21">
-        </div>
-        <div class="input-group">
-            <label>出生時刻</label>
-            <input type="time" id="birthTime" value="12:00">
-        </div>
-        <div class="input-group">
-            <label>出生地の位置情報（緯度・経度）</label>
-            <div class="geo-inputs">
-                <input type="number" id="lat" placeholder="緯度" step="0.0001" value="35.6895">
-                <input type="number" id="lng" placeholder="経度" step="0.0001" value="139.6917">
+        <div class="input-group"><label>生年月日</label><input type="date" id="date" value="1993-01-22"></div>
+        <div class="input-group"><label>出生時刻</label><input type="time" id="time" value="09:06"></div>
+        <div class="input-group"><label>緯度・経度</label>
+            <div class="geo">
+                <input type="number" id="lat" placeholder="緯度" step="0.01" value="43.06">
+                <input type="number" id="lng" placeholder="経度" step="0.01" value="141.35">
             </div>
         </div>
-        
         <button onclick="calculate()">ネイタルチャートを計算</button>
-
-        <div id="result">結果がここに表示されます</div>
+        <div id="result">ここに結果が表示されます</div>
     </div>
-
     <script>
         async function calculate() {
-            const date = document.getElementById('birthDate').value;
-            const time = document.getElementById('birthTime').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
             const lat = document.getElementById('lat').value;
             const lng = document.getElementById('lng').value;
-            const resultDiv = document.getElementById('result');
-
-            resultDiv.innerHTML = "星の位置を計算中...";
-
+            const resDiv = document.getElementById('result');
+            resDiv.innerText = "星の位置を計算中...";
             try {
-                // パラメータを組み立ててAPIを叩く
-                const params = new URLSearchParams({ date, time, lat, lng });
-                const response = await fetch(`/api/horoscope?${params}`);
-                
-                if (!response.ok) throw new Error('API Error');
-                
+                const response = await fetch(`/api/horoscope?date=${date}&time=${time}&lat=${lat}&lng=${lng}`);
                 const data = await response.json();
-
-                // 取得したデータを画面に反映
-                resultDiv.innerHTML = `
-                    <div class="sign-data"><span>☀️ 太陽:</span> <strong>${data.sun}</strong></div>
-                    <div class="sign-data"><span>🌙 月:</span> <strong>${data.moon}</strong></div>
-                    <div class="sign-data"><span>⬆️ アセンダント:</span> <strong>${data.asc}</strong></div>
-                `;
-            } catch (error) {
-                resultDiv.innerText = "計算に失敗しました。Vercelのデプロイ状況を確認してください。";
-                console.error(error);
-            }
+                resDiv.innerHTML = `☀️ 太陽: <strong>${data.sun}</strong><br>🌙 月: <strong>${data.moon}</strong><br>⬆️ ASC: <strong>${data.asc}</strong>`;
+            } catch (e) { resDiv.innerText = "計算失敗。VercelのURLで試してね！"; }
         }
     </script>
 </body>
