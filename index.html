@@ -140,18 +140,16 @@ async function calculate() {
         return;
     }
     
-    resDiv.innerHTML = "⏳ 計算中...";
+resDiv.innerHTML = "⏳ 宇宙の配置を計算中...";
 
     try {
-        // 1. まずRailwayにデータを送って結果をもらう
         const resp = await fetch(`https://yukichiaquacapri-production.up.railway.app/api/horoscope?date=${date}&time=${time}&lat=${lat}&lng=${lng}&offset=-540`);
         
         if (!resp.ok) throw new Error('サーバーエラーが発生しました');
         
-        // 2. もらったデータを解析する
         const data = await resp.json();
 
-        // 3. 最後に画面に表示する
+        // ここが修正ポイント！新しいデータの形（data.sun.pos など）に合わせて表示
         resDiv.innerHTML = `
             <div style="color:#ff00ff; font-weight:bold; margin-bottom:10px;">🌓 ${data.sect}</div>
             ☀️ 太陽: <strong>${data.sun.pos}</strong> <small>(${data.sun.status} Score:${data.sun.score})</small><br>
@@ -159,6 +157,12 @@ async function calculate() {
             ♂️ 火星: <strong>${data.mars.pos}</strong> <small>(${data.mars.status} Score:${data.mars.score})</small><br>
             🍀 PoF: <strong>${data.pof}</strong><br>
             ⬆️ ASC: <strong>${data.asc}</strong>
+        `;
+    } catch (e) {
+        resDiv.innerHTML = "❌ 通信に失敗しました。";
+        console.error(e);
+    }
+}
 
 </script>
 
