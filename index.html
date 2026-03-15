@@ -31,7 +31,7 @@
         <button onclick="calculate()">ネイタルチャートを計算</button>
         <div id="result">ここに結果が表示されます</div>
     </div>
-    <script>
+<script>
         async function calculate() {
             const date = document.getElementById('date').value;
             const time = document.getElementById('time').value;
@@ -42,8 +42,16 @@
             try {
                 const response = await fetch(`/api/horoscope?date=${date}&time=${time}&lat=${lat}&lng=${lng}`);
                 const data = await response.json();
-                resDiv.innerHTML = `☀️ 太陽: <strong>${data.sun}</strong><br>🌙 月: <strong>${data.moon}</strong><br>⬆️ ASC: <strong>${data.asc}</strong>`;
-            } catch (e) { resDiv.innerText = "計算失敗。VercelのURLで試してね！"; }
+                
+                // ここを修正：裏側のプログラムが返す名前に合わせます
+                if (data.error) {
+                    resDiv.innerText = "エラー: " + data.error;
+                } else {
+                    resDiv.innerHTML = `☀️ 太陽: <strong>${data.sun}</strong><br>🌙 月: <strong>${data.moon}</strong><br>⬆️ ASC: <strong>${data.asc}</strong>`;
+                }
+            } catch (e) { 
+                resDiv.innerText = "計算失敗。通信環境などを確認してね！"; 
+            }
         }
     </script>
 </body>
