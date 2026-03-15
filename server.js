@@ -2,6 +2,8 @@ import express from 'express';
 import swisseph from 'swisseph';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import cors from 'cors'; // npm install cors が必要になるかもしれません
+app.use(cors()); // これでどこからの呼び出しも許可されます
 
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
