@@ -102,8 +102,10 @@ async function calculate() {
     try {
         resDiv.innerHTML = "🌟 宇宙の配置を計算中...";
         
-        // RailwayのAPIを呼び出す（相対パスでOK）
-        const resp = await fetch(`/api/horoscope?date=${date}&time=${time}&lat=${lat}&lng=${lng}`);
+       // index.html の calculate 関数内の fetch 部分を書き換え
+const timezoneOffset = new Date().getTimezoneOffset(); // ブラウザから時差（分）を取得
+
+const resp = await fetch(`/api/horoscope?date=${date}&time=${time}&lat=${lat}&lng=${lng}&offset=${timezoneOffset}`);
         
         if (!resp.ok) {
             throw new Error('サーバーエラーが発生しました');
