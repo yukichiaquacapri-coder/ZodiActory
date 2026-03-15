@@ -1,5 +1,10 @@
 {
+  "name": "cosmic-calculator",
+  "version": "1.0.0",
   "dependencies": {
-    "swisseph": "^0.10.0"
+    "swisseph": "0.10.0"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
