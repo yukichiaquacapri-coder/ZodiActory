@@ -2,9 +2,7 @@
   "name": "yukichi-aqua-capri",
   "version": "1.0.0",
   "type": "module",
-  "dependencies": {
-    "swisseph": "^0.10.0"
-  },
+  "dependencies": {},
   "engines": {
     "node": "20.x"
   }
