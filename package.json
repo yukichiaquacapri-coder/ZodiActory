@@ -1,12 +1,16 @@
 {
-  "name": "cosmic-calculator-pro",
+  "name": "cosmic-calculator-railway",
   "version": "1.0.0",
   "type": "module",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
     "swisseph": "^0.10.0"
+  },
+  "engines": {
+    "node": "20.x"
   }
 }
