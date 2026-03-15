@@ -2,9 +2,9 @@
   "name": "yukichi-aqua-capri",
   "version": "1.0.0",
   "dependencies": {
-    "swisseph": "latest"
+    "astrology-js": "latest"
   },
   "engines": {
-    "node": "24.x"
+    "node": "20.x"
   }
 }
