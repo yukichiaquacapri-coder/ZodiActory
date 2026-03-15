@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "astrology-js": "^2.1.0"
+    "astrology-js": "latest"
   },
   "engines": {
     "node": "20.x"
