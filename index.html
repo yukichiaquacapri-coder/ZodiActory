@@ -25,26 +25,37 @@
         <button onclick="calculate()">ネイタルチャートを計算</button>
         <div id="result">ここに結果が表示されます</div>
     </div>
-    <script>
-        async function calculate() {
-            const resDiv = document.getElementById('result');
-            const params = new URLSearchParams({
-                date: document.getElementById('date').value,
-                time: document.getElementById('time').value,
-                lat: document.getElementById('lat').value,
-                lng: document.getElementById('lng').value
-            });
-            resDiv.innerText = "星の位置を計算中...";
-            try {
-                //const response = await fetch(`/api/horoscope?${params}`);
-                // index.html内のfetch部分を以下に書き換え
-const resp = await fetch(`/api/horoscope?date=${date}&time=${time}&lat=${lat}&lng=${lng}`);
-                const data = await response.json();
-                // 裏側のAPIが返す名前(sunPos, moonPos, ascPos)に厳密に合わせます
-                resDiv.innerHTML = `☀️ 太陽: <strong>${data.sunPos}</strong><br>🌙 月: <strong>${data.moonPos}</strong><br>♂️ 火星: <strong>${data.marsPos}</strong><br>⬆️ ASC: <strong>${data.ascPos}</strong>`;
-                resDiv.innerText = "計算失敗。もう一度試してね！";
-            }
+async function calculate() {
+    const resDiv = document.getElementById('result');
+    // 入力値の取得
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('time').value;
+    const lat = document.getElementById('lat').value;
+    const lng = document.getElementById('lng').value;
+
+    try {
+        resDiv.innerHTML = "計算中...";
+        // RailwayのURLに向けてデータを送る
+        const resp = await fetch(`/api/horoscope?date=${date}&time=${time}&lat=${lat}&lng=${lng}`);
+        const data = await resp.json();
+
+        if (data.error) {
+            resDiv.innerHTML = "エラーが発生しました。";
+            return;
         }
-    </script>
+
+        // 結果の表示
+        resDiv.innerHTML = `
+            ☀️ 太陽: <strong>${data.sunPos}</strong><br>
+            🌙 月: <strong>${data.moonPos}</strong><br>
+            ♂️ 火星: <strong>${data.marsPos}</strong><br>
+            ⬆️ ASC: <strong>${data.ascPos}</strong>
+        `;
+    } catch (error) {
+        // ここが抜けていると SyntaxError になります
+        console.error(error);
+        resDiv.innerHTML = "通信エラーが発生しました。";
+    }
+}
 </body>
 </html>
